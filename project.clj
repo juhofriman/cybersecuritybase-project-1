@@ -6,7 +6,8 @@
                  [compojure "1.5.1"]
                  [ring "1.5.0"]]
   :plugins [[lein-ring "0.9.7"]]
-  :ring {:handler cybersecuritybase-project-1.handler/app}
+  :ring {:handler cybersecuritybase-project-1.handler/app
+         :nrepl {:start? true}}
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring/ring-mock "0.3.0"]]}})
