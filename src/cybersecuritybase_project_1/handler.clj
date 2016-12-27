@@ -1,9 +1,12 @@
 (ns cybersecuritybase-project-1.handler
   (:require [compojure.core :refer :all]
-            [compojure.route :as route]))
+            [compojure.route :as route]
+            [net.cgrand.enlive-html :as html]))
+
+(html/deftemplate main-template "templates/main.html" [])
 
 (defroutes app-routes
-  (GET "/" [] "Hello World Test from cider")
+  (GET "/" [] (main-template))
   (route/not-found "Not Found"))
 
 (def app
