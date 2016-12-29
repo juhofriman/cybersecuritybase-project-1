@@ -22,3 +22,7 @@
   (do
     (swap! sessions dissoc session-id)
     nil))
+
+(defn reset-sessions!
+  []
+  (reset! sessions {}))

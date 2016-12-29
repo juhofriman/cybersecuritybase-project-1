@@ -2,6 +2,13 @@
   (:require [clojure.test :refer :all]
             [cybersecuritybase-project-1.auth :refer :all]))
 
+(defn reset
+  [f]
+  (reset-sessions!)
+  (f))
+
+(use-fixtures :each reset)
+
 (deftest authentication-tests
   
   (testing "authenticator must accept authentication fn"
