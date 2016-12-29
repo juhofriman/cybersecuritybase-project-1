@@ -24,9 +24,23 @@
         (do
           (sessions/invalidate! (get cookies "ses_id"))
           {:status 302 :headers {"Location" "/"} :cookies { "ses_id" {:value "" :max-age -1}}}))
+  (GET "/info.html" [] "Info. This is accessible without session key.")
+  (GET "/secret.html" [] "This is a secret. Accessible only with valid session key")
   (route/not-found "Not Found"))
+
+(defn wrap-auth
+  "Wraps authentication to requests. Pass is an seq of uris which DO NOT require authentication."
+  [handler pass]
+  (fn [{:keys [uri cookies] :as req}]
+    (if (some #{uri} pass)
+      (handler req)
+      (let [cookie-value (get-in cookies ["ses_id" :value])]
+        (if (sessions/valid-session? cookie-value)
+          (handler (assoc req :user (sessions/get-session cookie-value)))
+          {:status 401 :body "No dice without login!"})))))
 
 (def app
   (-> app-routes
       (wrap-params)
+      (wrap-auth ["/" "/login.html" "/logout.html" "/info.html"])
       (wrap-cookies)))

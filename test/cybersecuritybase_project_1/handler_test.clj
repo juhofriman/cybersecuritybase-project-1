@@ -36,5 +36,30 @@
       (is (= (:status response) 200))))
 
   (testing "not-found route"
-    (let [response (app (mock/request :get "/invalid"))]
-      (is (= (:status response) 404)))))
+    (with-redefs-fn
+      {#'cybersecuritybase-project-1.sessions/authenticate! (constantly "hash12345")
+       #'cybersecuritybase-project-1.sessions/valid-session? (constantly true)}
+      #(let [response (app (mock/request :get "/invalid"))]
+        (is (= (:status response) 404))))))
+
+(deftest middleware-wrap-auth
+
+  (testing "Must prevent without cookie"
+    (let [resp ((wrap-auth (constantly "should not see me") []) {:uri "/" :cookies {} })]
+      (is (= (:status resp) 401))))
+
+  (testing "Must pass defined uris"
+    (let [resp ((wrap-auth (constantly "response") ["/pass"]) {:uri "/pass"})]
+      (is (= "response" resp))))
+
+  (testing "Must allow with valid cookie"
+    (with-redefs-fn {#'cybersecuritybase-project-1.sessions/valid-session? (constantly true)}
+      #(let [resp ((wrap-auth (constantly "You see me!") []) {:uri "/" :cookies {"ses_id" "49242something2932"}})]
+         (is (= "You see me!" resp)))))
+
+  (testing "Must assoc :user"
+    (with-redefs-fn
+      {#'cybersecuritybase-project-1.sessions/valid-session? (constantly true)
+       #'cybersecuritybase-project-1.sessions/get-session (constantly {:principal "bob"})}
+      #(let [resp ((wrap-auth (fn [{:keys [user]}] (:principal user)) []) {:uri "/" :cookies {"ses_id" "4294something224"}})]
+         (is (= "bob" resp))))))
