@@ -1,6 +1,8 @@
 # cybersecuritybase-project-1
 
-FIXME
+[![Build Status](https://travis-ci.org/juhofriman/cybersecuritybase-project-1.svg?branch=master)](https://travis-ci.org/juhofriman/cybersecuritybase-project-1)
+
+This is my take on [Cyber Security Base](https://cybersecuritybase.github.io/) course project I.
 
 ## Prerequisites
 
