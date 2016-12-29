@@ -28,4 +28,11 @@
       (do
         (is (valid-session? ses-id))
         (invalidate! ses-id)
-        (is (not (valid-session? ses-id)))))))
+        (is (not (valid-session? ses-id))))))
+
+  (testing "getting principal for non existing session"
+    (is (nil? (get-session "12345"))))
+
+  (testing "getting principal for valid session"
+    (let [ses-id (authenticate! (constantly true) "bob" "spooky")]
+      (is (= "bob" (:principal (get-session ses-id)))))))

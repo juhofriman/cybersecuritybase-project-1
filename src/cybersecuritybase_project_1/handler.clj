@@ -4,29 +4,20 @@
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.params :refer [wrap-params]]
             [cybersecuritybase-project-1.sessions :as sessions]
-            [net.cgrand.enlive-html :as html]))
+            [cybersecuritybase-project-1.templates :as templates]))
 
-(html/deftemplate login-template "templates/login.html"
-  []
-  [:head :title] (html/content "Please login")
-  [:body :h1] (html/content (str "Please login ")))
-
-(html/deftemplate main-template "templates/main.html"
-  []
-  [:head :title] (html/content "Application name")
-  [:body :h1] (html/content (str "Nice, you're in")))
-
-(defn authenticator
+(defn dummy-authenticator
   [username password]
   (and (= username "bob") (= password "spooky")))
 
 (defroutes app-routes
   (GET "/" {cookies :cookies}
-       (if (sessions/valid-session? (get-in cookies ["ses_id" :value]))
-         (main-template)
-         (login-template)))
+       (let [cookie-value (get-in cookies ["ses_id" :value])]
+         (if (sessions/valid-session? cookie-value)
+           (templates/main-template (sessions/get-session cookie-value))
+           (templates/login-template))))
   (POST "/login.html" [username password]
-        (if-let [auth-id (sessions/authenticate! authenticator username password)]
+        (if-let [auth-id (sessions/authenticate! dummy-authenticator username password)]
           {:status 302 :headers {"Location" "/"} :cookies {"ses_id" {:value auth-id}}  :body ""}
           {:status 302 :headers {"Location" "/?error=invalid-credentials"} :body ""}))
   (POST "/logout.html" {cookies :cookies}
