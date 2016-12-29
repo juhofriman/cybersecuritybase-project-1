@@ -14,14 +14,14 @@
 (deftest test-app
 
   (testing "login should redirect and set cookie for succesfull login"
-    (with-redefs-fn {#'cybersecuritybase-project-1.auth/authenticate! (constantly "hash12345")}
+    (with-redefs-fn {#'cybersecuritybase-project-1.sessions/authenticate! (constantly "hash12345")}
       #(let [response (app (-> (mock/request :post "/login.html")
                                (mock/body {"username" "foo" "password" "bar"})))]
         (is (= (:status response) 302))
         (is (sets-cookie response "ses_id" "hash12345")))))
 
   (testing "login should redirect for invalid credentials"
-    (with-redefs-fn {#'cybersecuritybase-project-1.auth/authenticate! (constantly nil)}
+    (with-redefs-fn {#'cybersecuritybase-project-1.sessions/authenticate! (constantly nil)}
       #(let [response (app (-> (mock/request :post "/login.html")
                                (mock/body {"username" "foo" "password" "bar"})))]
         (is (= (:status response) 302)))))

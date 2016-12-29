@@ -3,7 +3,7 @@
             [compojure.route :as route]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.params :refer [wrap-params]]
-            [cybersecuritybase-project-1.auth :as auth]
+            [cybersecuritybase-project-1.sessions :as sessions]
             [net.cgrand.enlive-html :as html]))
 
 (html/deftemplate login-template "templates/login.html"
@@ -22,16 +22,16 @@
 
 (defroutes app-routes
   (GET "/" {cookies :cookies}
-       (if (auth/valid-session? (get-in cookies ["ses_id" :value]))
+       (if (sessions/valid-session? (get-in cookies ["ses_id" :value]))
          (main-template)
          (login-template)))
   (POST "/login.html" [username password]
-        (if-let [auth-id (auth/authenticate! authenticator username password)]
+        (if-let [auth-id (sessions/authenticate! authenticator username password)]
           {:status 302 :headers {"Location" "/"} :cookies {"ses_id" {:value auth-id}}  :body ""}
           {:status 302 :headers {"Location" "/?error=invalid-credentials"} :body ""}))
   (POST "/logout.html" {cookies :cookies}
         (do
-          (auth/invalidate! (get cookies "ses_id"))
+          (sessions/invalidate! (get cookies "ses_id"))
           {:status 302 :headers {"Location" "/"} :cookies { "ses_id" {:value "" :max-age -1}}}))
   (route/not-found "Not Found"))
 

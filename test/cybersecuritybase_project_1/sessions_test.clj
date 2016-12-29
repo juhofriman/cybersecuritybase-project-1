@@ -1,6 +1,6 @@
-(ns cybersecuritybase-project-1.auth-test
+(ns cybersecuritybase-project-1.sessions-test
   (:require [clojure.test :refer :all]
-            [cybersecuritybase-project-1.auth :refer :all]))
+            [cybersecuritybase-project-1.sessions :refer :all]))
 
 (defn reset
   [f]

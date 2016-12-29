@@ -1,4 +1,4 @@
-(ns cybersecuritybase-project-1.auth)
+(ns cybersecuritybase-project-1.sessions)
 
 (def sessions (atom {}))
 
