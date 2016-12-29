@@ -57,6 +57,11 @@
       #(let [resp ((wrap-auth (constantly "You see me!") []) {:uri "/" :cookies {"ses_id" "49242something2932"}})]
          (is (= "You see me!" resp)))))
 
+  (testing "Must prevent with invalid cookie"
+    (with-redefs-fn {#'cybersecuritybase-project-1.sessions/valid-session? (constantly false)}
+      #(let [resp ((wrap-auth (constantly "You see me!") []) {:uri "/" :cookies {"ses_id" "49242something2932"}})]
+         (is (= (:status resp) 401)))))
+
   (testing "Must assoc :user"
     (with-redefs-fn
       {#'cybersecuritybase-project-1.sessions/valid-session? (constantly true)
