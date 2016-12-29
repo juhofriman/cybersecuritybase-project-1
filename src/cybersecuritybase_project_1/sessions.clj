@@ -1,11 +1,17 @@
-(ns cybersecuritybase-project-1.sessions)
+(ns cybersecuritybase-project-1.sessions
+  (:require [digest :as d]))
 
 (def sessions (atom {}))
 
-(defn- assoc-session [id]
+(defn- assoc-session
+  [id]
   (do
     (swap! sessions assoc id {})
     id))
+
+(defn- generate-session-key
+  [seed]
+  (d/sha-256 seed))
 
 (defn valid-session?
   [session-id]
@@ -14,7 +20,7 @@
 (defn authenticate!
   [auth-fn username password]
   (if (auth-fn username password)
-    (assoc-session "42492024")
+    (assoc-session (generate-session-key username))
     nil))
 
 (defn invalidate!
