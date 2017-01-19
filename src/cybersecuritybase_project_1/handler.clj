@@ -9,7 +9,9 @@
 
 (defn dummy-authenticator
   [username password]
-  (and (= username "bob") (= password "spooky")))
+  (case username
+    "bob" (= password "spooky")
+    "liz" (= password "allied")))
 
 (defroutes app-routes
   (GET "/" {cookies :cookies}

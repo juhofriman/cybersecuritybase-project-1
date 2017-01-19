@@ -7,9 +7,12 @@
                  [ring "1.5.0"]
                  [enlive "1.1.6"]
                  [digest "1.4.5"]
-                 [clj-time "0.13.0"]]
+                 [clj-time "0.13.0"]
+                 [org.clojure/java.jdbc "0.6.1"]
+                 [com.h2database/h2 "1.3.170"]]
   :plugins [[lein-ring "0.9.7"]]
-  :ring {:handler cybersecuritybase-project-1.handler/app
+  :ring {:init cybersecuritybase-project-1.messages/init-db!
+         :handler cybersecuritybase-project-1.handler/app
          :nrepl {:start? true}}
   :profiles
   {:dev {:source-paths ["dev"]
