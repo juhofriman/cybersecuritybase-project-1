@@ -17,11 +17,13 @@
 (html/defsnippet message-listing "templates/snippets/message-listing.html"
   [:div.listing]
   [messages]
-  [:div.listing :div.message] (html/clone-for [{topic :topic
+  [:div.listing :div.message] (html/clone-for [{id :id
+                                                topic :topic
                                                 message :message
                                                 sender :sender
                                                 timestamp :timestamp} messages]
-                                              [:div.topic] (html/content  topic)
+                                              [:div.topic :a] (html/content  topic)
+                                              [:div.topic :a] (html/set-attr :href (str "message.html?id=" id)) 
                                               [:div.ellipsis] (html/content message)
                                               [:div.sender] (html/content sender)
                                               [:div.time] (html/content (f/unparse time-formatter timestamp))))
@@ -30,6 +32,14 @@
   [:div.message]
   [])
 
+(html/defsnippet message "templates/snippets/message.html"
+  [:div.message]
+  [message]
+  [:h1] (if (nil? message) (html/content "No such message" "Message"))
+  [:.timestamp] (html/content (f/unparse time-formatter (:timestamp message)))
+  [:.sender] (html/content (:sender message))
+  [:.topic] (html/content (:topic message))
+  [:.message-content] (html/content (:message message)))
 
 (html/deftemplate main-template "templates/main.html"
   [{:keys [principal]} content-snippet]

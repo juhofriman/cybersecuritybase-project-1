@@ -14,7 +14,8 @@
   []
   (j/db-do-commands dbspec
                     [(j/create-table-ddl :messages
-                                         [[:sender "varchar(200)"]
+                                         [[:id "integer identity"]
+                                          [:sender "varchar(200)"]
                                           [:recipient "varchar(200)"]
                                           [:topic "varchar(500)"]
                                           [:message "text"]
@@ -31,17 +32,31 @@
 
 (defn- has-one-element? [seq] (= 1 (count seq)))
 
-(defn persist-user [username password]
+(defn persist-user
+  "Persists user to system with given username and password. After this user is able to login."
+  [username password]
   (j/execute! dbspec ["INSERT INTO users VALUES(?, ?)" username (d/sha-256 password)]))
 
-(defn authenticate [username password]
+(defn authenticate
+  "Authenticates user with password. Yields true|false."
+  [username password]
   (has-one-element? (j/query dbspec ["SELECT * FROM users WHERE username = ? AND password = ?" username (d/sha-256 password)])))
 
-(defn persist-message [{:keys [from to topic message]}]
-  (j/execute! dbspec ["INSERT INTO messages VALUES(?, ?, ?, ?, now())" from (if (= :everybody to) nil to) topic message]))
+(defn persist-message
+  "Persists message. Message is expected to be an associative with keys :from :topic :message.
+  :to is optional, if it is missing or it equals :everybody, everybody is able to read message."
+  [{:keys [from to topic message]}]
+  (j/execute! dbspec ["INSERT INTO messages VALUES(default, ?, ?, ?, ?, now())" from (if (= :everybody to) nil to) topic message]))
 
-(defn fetch-messages [username]
+(defn fetch-messages
+  "Fetches messages username is allowed to read"
+  [username]
   (j/query dbspec ["SELECT * FROM messages WHERE recipient IS NULL OR recipient = ?" username]))
+
+(defn fetch-message
+  "Fetches message by id"
+  [id]
+  (first (j/query dbspec ["SELECT * FROM messages WHERE id = ?" id])))
 
 ; Some utilities for mapping data more easily
 (defn clob-to-string [clob]

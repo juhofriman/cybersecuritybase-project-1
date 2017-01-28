@@ -32,6 +32,7 @@
         (do
           (sessions/invalidate! (get cookies "ses_id"))
           {:status 302 :headers {"Location" "/"} :cookies { "ses_id" {:value "" :max-age -1}}}))
+  (GET "/message.html" {user :user qp :query-params} (templates/main-template user (templates/message (messages/fetch-message (get qp "id")))))
   (GET "/new-message.html" {user :user} (templates/main-template user (templates/new-message)))
   (POST "/new-message.html" {user :user params :form-params}
         (do (messages/persist-message (-> params

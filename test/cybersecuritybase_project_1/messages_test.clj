@@ -17,6 +17,7 @@
         (is (= 1 (count m)))
         (is (= "Hello" (:topic message)))
         (is (= "hello hello!" (:message message)))
+        (is (some? (:id message)))
         (is (some? (:timestamp message))))))
 
 (deftest persisting-two-messages
@@ -30,6 +31,15 @@
   (do (persist-message {:from "jack" :to "jim" :topic "Hello" :message "hello hello!"})
       (is (= 1 (count (fetch-messages "jim"))))
       (is (empty? (fetch-messages "jack")))))
+
+(deftest fetching-persisted-message
+  ; this is tacky test. I mean we just expect entitys identity to be 1...
+  (do (persist-message {:from "jack" :to "jim" :topic "Hello" :message "Hello!"})
+      (let [message (fetch-message 1)]
+        (is (= "Hello" (:topic message)))
+        (is (= "Hello!" (:message message)))
+        (is (some? (:id message)))
+        (is (some? (:timestamp message))))))
 
 (deftest database-user-creation
   ; dunno if this actually reasonable? It could also just update password...
