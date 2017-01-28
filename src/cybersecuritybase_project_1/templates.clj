@@ -26,6 +26,11 @@
                                               [:div.sender] (html/content sender)
                                               [:div.time] (html/content (f/unparse time-formatter timestamp))))
 
+(html/defsnippet new-message "templates/snippets/new-message.html"
+  [:div.message]
+  [])
+
+
 (html/deftemplate main-template "templates/main.html"
   [{:keys [principal]} content-snippet]
   [:head :title] (html/content "Application name")

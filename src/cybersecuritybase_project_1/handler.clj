@@ -5,9 +5,17 @@
             [ring.middleware.params :refer [wrap-params]]
             [cybersecuritybase-project-1.sessions :as sessions]
             [cybersecuritybase-project-1.templates :as templates]
-            [cybersecuritybase-project-1.messages :as messages]))
+            [cybersecuritybase-project-1.messages :as messages]
+            [clojure.set :refer [rename-keys]]))
 
-(def dummy-authenticator messages/authenticate)
+(def authenticator messages/authenticate)
+
+(defn rename-keys-fn
+  "Renames keys in associative using suplied function. 
+  Clojure's own rename-keys expects already given mapping like this
+  (rename-keys {:a 1} {:a :b}) -> {:b 1}"
+  [associative fn]
+  (rename-keys associative (into {} (map #(vector % (fn %))) (keys associative))))
 
 (defroutes app-routes
   (GET "/" {cookies :cookies}
@@ -17,13 +25,19 @@
                                     (templates/message-listing (messages/fetch-messages (:principal (sessions/get-session cookie-value)))))
            (templates/login-template))))
   (POST "/login.html" [username password]
-        (if-let [auth-id (sessions/authenticate! dummy-authenticator username password)]
+        (if-let [auth-id (sessions/authenticate! authenticator username password)]
           {:status 302 :headers {"Location" "/"} :cookies {"ses_id" {:value auth-id}}  :body ""}
           {:status 302 :headers {"Location" "/?error=invalid-credentials"} :body ""}))
   (POST "/logout.html" {cookies :cookies}
         (do
           (sessions/invalidate! (get cookies "ses_id"))
           {:status 302 :headers {"Location" "/"} :cookies { "ses_id" {:value "" :max-age -1}}}))
+  (GET "/new-message.html" {user :user} (templates/main-template user (templates/new-message)))
+  (POST "/new-message.html" {user :user params :form-params}
+        (do (messages/persist-message (-> params
+                                          (rename-keys-fn keyword)
+                                          (assoc :from (:principal user))))
+            {:status 302 :headers {"Location" "/"}}))
   (GET "/info.html" [] "Info. This is accessible without session key.")
   (GET "/secret.html" [] "This is a secret. Accessible only with valid session key")
   (route/not-found "Not Found"))
