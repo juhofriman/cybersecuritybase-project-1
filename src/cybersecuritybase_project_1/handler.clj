@@ -7,11 +7,7 @@
             [cybersecuritybase-project-1.templates :as templates]
             [cybersecuritybase-project-1.messages :as messages]))
 
-(defn dummy-authenticator
-  [username password]
-  (case username
-    "bob" (= password "spooky")
-    "liz" (= password "allied")))
+(def dummy-authenticator messages/authenticate)
 
 (defroutes app-routes
   (GET "/" {cookies :cookies}

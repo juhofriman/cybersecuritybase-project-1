@@ -5,7 +5,9 @@
 
 (defn insert-some-state
   []
-  (do (msg/persist-message {:from "Jack" :to :everybody :topic "Hello everybody!" :message "How ya'll doin'?"})
+  (do (msg/persist-user "bob" "spooky")
+      (msg/persist-user "liz" "allied")
+      (msg/persist-message {:from "Jack" :to :everybody :topic "Hello everybody!" :message "How ya'll doin'?"})
       (msg/persist-message {:from "Jack" :to "bob" :topic "Hi bob, here's my secret key!" :message "3483f83c3rc3rc"})))
 
 (defn start!

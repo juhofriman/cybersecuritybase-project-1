@@ -1,6 +1,7 @@
 (ns cybersecuritybase-project-1.messages
   (:require [clj-time.coerce :as c]
-            [clojure.java.jdbc :as j]))
+            [clojure.java.jdbc :as j]
+            [digest :as d]))
 
 (def dbspec {
     :classname   "org.h2.Driver"
@@ -12,17 +13,29 @@
 (defn init-db!
   []
   (j/db-do-commands dbspec
-                    (j/create-table-ddl :messages
-                                        [[:sender "varchar(200)"]
-                                         [:recipient "varchar(200)"]
-                                         [:topic "varchar(500)"]
-                                         [:message "text"]
-                                         [:timestamp "TIMESTAMP"]])))
+                    [(j/create-table-ddl :messages
+                                         [[:sender "varchar(200)"]
+                                          [:recipient "varchar(200)"]
+                                          [:topic "varchar(500)"]
+                                          [:message "text"]
+                                          [:timestamp "TIMESTAMP"]])
+                     (j/create-table-ddl :users
+                                         [[:username "varchar(299) PRIMARY KEY"]
+                                          [:password "varchar(64)"]])]))
 
 (defn teardown-db!
   []
   (j/db-do-commands dbspec
-                    (j/drop-table-ddl :messages)))
+                    [(j/drop-table-ddl :messages)
+                     (j/drop-table-ddl :users)]))
+
+(defn- has-one-element? [seq] (= 1 (count seq)))
+
+(defn persist-user [username password]
+  (j/execute! dbspec ["INSERT INTO users VALUES(?, ?)" username (d/sha-256 password)]))
+
+(defn authenticate [username password]
+  (has-one-element? (j/query dbspec ["SELECT * FROM users WHERE username = ? AND password = ?" username (d/sha-256 password)])))
 
 (defn persist-message [{:keys [from to topic message]}]
   (j/execute! dbspec ["INSERT INTO messages VALUES(?, ?, ?, ?, now())" from (if (= :everybody to) nil to) topic message]))
