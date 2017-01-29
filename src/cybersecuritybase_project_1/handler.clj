@@ -67,5 +67,5 @@
 (def app
   (-> app-routes
       (wrap-params)
-      (wrap-auth ["/" "/login.html" "/logout.html" "/info.html"])
+      (wrap-auth ["/" "/login.html" "/logout.html" "/info.html" "/secret.html"])
       (wrap-cookies)))
