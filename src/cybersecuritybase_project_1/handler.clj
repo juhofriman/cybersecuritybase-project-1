@@ -52,7 +52,7 @@
   (route/not-found "Not Found"))
 
 (defn wrap-auth
-  "Wraps authentication to requests. Pass is an seq of uris which DO NOT require authentication."
+  "Wraps authentication to requests. Pass is a seq of uris which DO NOT require authentication."
   [handler pass]
   (fn [{:keys [uri cookies] :as req}]
     (if (some #{uri} pass)

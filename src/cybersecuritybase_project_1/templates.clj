@@ -6,8 +6,8 @@
 
 (html/deftemplate login-template "templates/login.html"
   []
-  [:head :title] (html/content "Please login")
-  [:body :h1] (html/content (str "Please login ")))
+  [:head :title] (html/content "SECMSG")
+  [:body :h1] (html/content (str "SECMSG - Please login ")))
 
 (html/defsnippet login-info "templates/snippets/login-info.html"
   [:div.login]
@@ -21,8 +21,9 @@
                                                 topic :topic
                                                 message :message
                                                 sender :sender
+                                                recipient :recipient
                                                 timestamp :timestamp} messages]
-                                              [:div.topic :a] (html/content  topic)
+                                              [:div.topic :a] (html/content  (str (if recipient "PRIVATE: " "GLOBAL: ")  topic) )
                                               [:div.topic :a] (html/set-attr :href (str "message.html?id=" id)) 
                                               [:div.ellipsis] (html/content message)
                                               [:div.sender] (html/content sender)
@@ -47,9 +48,9 @@
 
 (html/deftemplate main-template "templates/main.html"
   [{:keys [principal]} content-snippet]
-  [:head :title] (html/content "Application name")
+  [:head :title] (html/content "SECMSG")
   [:body :div.login] (html/append (login-info principal))
-  [:body :h1] (html/content (str "Nice, you're in " principal))
+  [:body :h1] (html/content (str "SECMSG"))
   [:body :div.content] (html/content content-snippet))
 
 

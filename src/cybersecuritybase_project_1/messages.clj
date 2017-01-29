@@ -75,3 +75,14 @@
   (result-set-read-column [v _ _] (clob-to-string v)) 
   java.sql.Timestamp
   (result-set-read-column [v _ _] (c/from-sql-time v)))
+
+(defn init-db-with-predefined-state!
+  "Initializes database with some initial state"
+  []
+  (do (init-db!)
+      (persist-user "bob" "spooky")
+      (persist-user "liz" "allied")
+      (persist-user "mark" "personal")
+      (persist-user "jack" "mystery")
+      (persist-message {:from "jack" :to :everybody :topic "Hello everybody!" :message "How ya'll doin'? In SECMSG you can send global and private messages."})
+      (persist-message {:from "jack" :to "bob" :topic "Hi bob, here's the secret we talked about!" :message "Open safe with code: 73819384"})))

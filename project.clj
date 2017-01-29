@@ -11,7 +11,7 @@
                  [org.clojure/java.jdbc "0.6.1"]
                  [com.h2database/h2 "1.3.170"]]
   :plugins [[lein-ring "0.9.7"]]
-  :ring {:init cybersecuritybase-project-1.messages/init-db!
+  :ring {:init cybersecuritybase-project-1.messages/init-db-with-predefined-state!
          :handler cybersecuritybase-project-1.handler/app
          :nrepl {:start? true}}
   :profiles
