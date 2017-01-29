@@ -14,10 +14,14 @@ This is built in clojure but do not fear. It's easy.
 
 ### Never used clojure?
 
-Clojure is JVM hosted language and you need just JVM to run this application. Download jar (link here) and start it with:
+Clojure is JVM hosted language and you need just JVM to run this application. I have prebuilt jar, so evaluator does not have to install leininge.
+
+https://dl.dropboxusercontent.com/u/68780282/cybersecuritybase-project-1-0.1.0-SNAPSHOT-standalone.jar
+
+Download jar and start it with:
 
 ```
-java -jar cybersecuritybase-project-1-0.1.0-SNAPSHOT-s.jar
+java -jar cybersecuritybase-project-1-0.1.0-SNAPSHOT-standalone.jar
 ```
 
 And point browser to localhost:3000. Application sets some initial state and at the moment it is not possible to launch it without initial messages and users. This could be easily done with environment though.
