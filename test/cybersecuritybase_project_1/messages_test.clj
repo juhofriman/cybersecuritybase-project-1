@@ -53,3 +53,9 @@
       (is (not (authenticate "wrongusername" "secretpassword")))
       (is (not (authenticate "wrongusername" "wrongpassword")))
       (is (not (authenticate "username" "wrongpassword")))))
+
+(deftest getting-recipients
+
+  (do (persist-user "user1" "pazzz")
+      (persist-user "user2" "pizzz")
+      (is (= 2 (count (get-users))))))

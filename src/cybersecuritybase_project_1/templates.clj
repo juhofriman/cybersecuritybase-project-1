@@ -28,14 +28,18 @@
                                               [:div.sender] (html/content sender)
                                               [:div.time] (html/content (f/unparse time-formatter timestamp))))
 
+
 (html/defsnippet new-message "templates/snippets/new-message.html"
   [:div.message]
-  [])
+  [recipients]
+  [:.recipients :option] (html/clone-for [{:keys [username]} (cons nil recipients)]
+                                 [:option] (html/content (or username "Everybody"))
+                                 [:option] (html/set-attr :value username)))
 
 (html/defsnippet message "templates/snippets/message.html"
   [:div.message]
   [message]
-  [:h1] (if (nil? message) (html/content "No such message" "Message"))
+  [:h1] (if (nil? message) (html/content "No such message") (html/content "Message"))
   [:.timestamp] (html/content (f/unparse time-formatter (:timestamp message)))
   [:.sender] (html/content (:sender message))
   [:.topic] (html/content (:topic message))

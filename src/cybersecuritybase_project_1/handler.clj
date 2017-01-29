@@ -17,6 +17,13 @@
   [associative fn]
   (rename-keys associative (into {} (map #(vector % (fn %))) (keys associative))))
 
+(defn empty-to-nil
+  "Transforms a value with key in associave to nil if it is empty"
+  [associative key]
+  (if (empty? (get associative key))
+    (assoc associative key nil)
+    associative))
+
 (defroutes app-routes
   (GET "/" {cookies :cookies}
        (let [cookie-value (get-in cookies ["ses_id" :value])]
@@ -33,10 +40,11 @@
           (sessions/invalidate! (get cookies "ses_id"))
           {:status 302 :headers {"Location" "/"} :cookies { "ses_id" {:value "" :max-age -1}}}))
   (GET "/message.html" {user :user qp :query-params} (templates/main-template user (templates/message (messages/fetch-message (get qp "id")))))
-  (GET "/new-message.html" {user :user} (templates/main-template user (templates/new-message)))
+  (GET "/new-message.html" {user :user} (templates/main-template user (templates/new-message (messages/get-users))))
   (POST "/new-message.html" {user :user params :form-params}
         (do (messages/persist-message (-> params
                                           (rename-keys-fn keyword)
+                                          (empty-to-nil :to)
                                           (assoc :from (:principal user))))
             {:status 302 :headers {"Location" "/"}}))
   (GET "/info.html" [] "Info. This is accessible without session key.")

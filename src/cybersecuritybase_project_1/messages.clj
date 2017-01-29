@@ -42,6 +42,11 @@
   [username password]
   (has-one-element? (j/query dbspec ["SELECT * FROM users WHERE username = ? AND password = ?" username (d/sha-256 password)])))
 
+(defn get-users
+  "Returns an array of every usename persisted"
+  []
+  (j/query dbspec ["SELECT username FROM users"]))
+
 (defn persist-message
   "Persists message. Message is expected to be an associative with keys :from :topic :message.
   :to is optional, if it is missing or it equals :everybody, everybody is able to read message."
