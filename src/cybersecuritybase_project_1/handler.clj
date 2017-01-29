@@ -6,6 +6,7 @@
             [cybersecuritybase-project-1.sessions :as sessions]
             [cybersecuritybase-project-1.templates :as templates]
             [cybersecuritybase-project-1.messages :as messages]
+            [clojure.data.json :as json]
             [clojure.set :refer [rename-keys]]))
 
 (def authenticator messages/authenticate)
@@ -49,6 +50,7 @@
             {:status 302 :headers {"Location" "/"}}))
   (GET "/info.html" [] "Info. This is accessible without session key.")
   (GET "/secret.html" [] "This is a secret. Accessible only with valid session key")
+  (GET "/api/users" [] {:status 200 :headers {"Content-type" "application/json"} :body (json/write-str (messages/get-users))})
   (route/not-found "Not Found"))
 
 (defn wrap-auth

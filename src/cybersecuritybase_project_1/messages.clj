@@ -45,7 +45,7 @@
 (defn get-users
   "Returns an array of every usename persisted"
   []
-  (j/query dbspec ["SELECT username FROM users"]))
+  (j/query dbspec ["SELECT * FROM users"]))
 
 (defn persist-message
   "Persists message. Message is expected to be an associative with keys :from :topic :message.
